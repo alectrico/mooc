@@ -1,14 +1,3 @@
-# == Schema Information
-#
-# Table name: users
-#
-#  id         :integer         not null, primary key
-#  name       :string(255)
-#  email      :string(255)
-#  created_at :datetime        not null
-#  updated_at :datetime        not null
-#
-
 require 'spec_helper'
 
 describe User do
@@ -32,6 +21,14 @@ describe User do
 
   it { should be_valid }
   it { should_not be_admin }
+
+  describe "accessible attributes" do
+    it "should not allow access to admin" do
+      expect do
+        User.new(admin: true)
+      end.should raise_error(ActiveModel::MassAssignmentSecurity::Error)
+    end    
+  end
 
   describe "with admin attribute set to 'true'" do
     before { @user.toggle!(:admin) }
