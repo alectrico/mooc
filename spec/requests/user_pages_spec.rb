@@ -1,12 +1,10 @@
 require 'spec_helper'
 
 describe "User pages" do
-
   subject { page }
   let(:user) { FactoryGirl.create(:user) }
 
   describe "index" do
-
     before do
       sign_in user
       visit users_path
@@ -67,18 +65,33 @@ describe "User pages" do
     let(:visiting_user) { FactoryGirl.create(:user) }
     let!(:m1) { FactoryGirl.create(:micropost, user: user, content: "foo") }
     let!(:m2) { FactoryGirl.create(:micropost, user: user, content: "bar") }
+    let!(:vm1) { FactoryGirl.create(:micropost, user: visiting_user, content: "bar") }
+    let!(:vm2) { FactoryGirl.create(:micropost, user: visiting_user, content: "bar") }
     
-    before { visit user_path(user) }
+    describe "as the user whose profile it is" do
+      before { visit user_path(user) }
+      it { should have_selector('h1',    text: user.name) }
+      it { should have_selector('title', text: user.name) }
 
-    it { should have_selector('h1',    text: user.name) }
-    it { should have_selector('title', text: user.name) }
+      describe "microposts" do
+        it { should have_content(m1.content) }
+        it { should have_content(m2.content) }
+        it { should have_content(user.microposts.count) }
+      end
+    end
 
-    describe "microposts" do
+    describe "as a user visiting someone elses profile" do
+      before do
+        sign_in user
+        visit user_path(visiting_user)
+      end
 
-      it { should have_content(m1.content) }
-      it { should have_content(m2.content) }
-      it { should have_content(user.microposts.count) }
-      
+      describe "should not be able to delete others posts" do
+        it { should have_selector('h1',    text: visiting_user.name) }
+        it { should have_selector('title', text: visiting_user.name) }
+        it { should_not have_link('delete', href: micropost_path(vm1)) }
+        it { should_not have_link('delete', href: micropost_path(vm2)) }
+      end
     end
   end
 
