@@ -64,6 +64,7 @@ describe "User pages" do
 
   describe "profile page" do
   	let(:user) { FactoryGirl.create(:user) }
+    let(:visiting_user) { FactoryGirl.create(:user) }
     let!(:m1) { FactoryGirl.create(:micropost, user: user, content: "foo") }
     let!(:m2) { FactoryGirl.create(:micropost, user: user, content: "bar") }
     

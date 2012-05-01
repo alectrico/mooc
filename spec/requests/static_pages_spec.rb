@@ -49,10 +49,14 @@ describe "Static pages" do
       it "should display the number of microposts for each user" do
         should have_selector('span', text: user.microposts.count.to_s + " " + "micropost".pluralize)
       end
-    end
-    
-    describe "description" do
-          
+
+      describe "should paginate when there are too many users for the page" do
+        before(:all) { 50.times { FactoryGirl.create(:micropost, user: user, content: "foobar") } }
+        after(:all)  { User.delete_all }
+
+        it { should have_link('Next') }
+        its(:html) { should match('>2</a>') }
+      end
     end
   end
 
