@@ -11,4 +11,25 @@
 	  <h3>Micropost Feed</h3>
 	  <%= render 'shared/feed' %>
 	</div>
-</div>  
+</div>
+<script>
+$(document).ready(
+	function() {
+		$('textarea#micropost_content').keyup(function() {
+			// set character limit
+			var charLimit = 140;
+
+			// calculate the number of characters used
+			var charLength = $(this).val().length;
+
+			//display number of characters remaining
+			$('span#charCount').html(charLimit - charLength + ' characters remaining');
+
+			// Make the font red if the limit is breached
+			if($(this).val().length > charLimit)
+				$('span#charCount').addClass('redText')
+			else
+				$('span#charCount').removeClass('redText')
+		});
+	});
+</script>
